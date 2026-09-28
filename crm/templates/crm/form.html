@@ -1,0 +1,1 @@
+{% extends 'crm/base.html' %}{% block content %}<h1>{{ title }}</h1><section class="panel edit"><form method="post">{% csrf_token %}{{ form.as_p }}<button>Guardar</button> <a href="{% url 'lead_list' %}">Cancelar</a></form></section>{% endblock %}

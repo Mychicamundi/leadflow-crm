@@ -1,0 +1,1 @@
+{% extends 'crm/base.html' %}{% block content %}<section class="login panel"><h1>Bienvenida a LeadFlow</h1><p>Ingresa con el usuario de demostración que hayas creado.</p><form method="post">{% csrf_token %}{{ form.as_p }}<button>Entrar</button></form></section>{% endblock %}
