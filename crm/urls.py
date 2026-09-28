@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .webhooks import whatsapp_webhook
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
@@ -9,4 +10,5 @@ urlpatterns = [
     path("leads/<int:pk>/stage/", views.change_stage, name="change_stage"),
     path("tasks/<int:pk>/toggle/", views.toggle_task, name="toggle_task"),
     path("assistant/", views.assistant, name="assistant"),
+    path("webhooks/whatsapp/", whatsapp_webhook, name="whatsapp_webhook"),
 ]
