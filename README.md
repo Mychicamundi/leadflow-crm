@@ -1,44 +1,34 @@
 # LeadFlow CRM — MVP
 
-MVP demostrativo de CRM construido con Python, Django, HTML y CSS. Permite iniciar sesión, gestionar clientes potenciales, actualizar un embudo de ventas, consultar indicadores y crear tareas automáticas de seguimiento.
+CRM demostrativo con Python y Django: autenticación, prospectos, embudo de ventas, dashboard, tareas automáticas y asistente interno basado en reglas.
 
-> **Estado:** proyecto de demostración local. El asistente funciona con reglas, **no** con un modelo de inteligencia artificial. No incluye integración real con WhatsApp, plataformas externas de CRM ni envío de correos.
+## Nuevo: integración OpenAI + WhatsApp Cloud API
 
-## Instalación
+El webhook `/webhooks/whatsapp/` recibe mensajes de texto de WhatsApp, verifica la firma HMAC SHA-256 de Meta, solicita respuestas contextuales a la API Responses de OpenAI y envía las respuestas mediante la API oficial WhatsApp Cloud de Meta. Los mensajes repetidos se deduplican mediante la caché de Django. El asistente interno del dashboard sigue funcionando con reglas; la IA está integrada en el webhook.
 
-Requiere Python 3.11 o superior.
+**La integración es código funcional pendiente de configurar y validar extremo a extremo con cuentas reales.** No hay claves ni datos de clientes incluidos.
+
+### Instalación
+
+Requiere Python 3.11+.
 
 ```bash
 python -m venv .venv
-```
-
-En Windows: `.venv\Scripts\activate`; en macOS/Linux: `source .venv/bin/activate`.
-
-```bash
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
+# Copia .env.example a .env y cambia DJANGO_SECRET_KEY
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
-```
-
-Abre http://127.0.0.1:8000/ y accede con el usuario creado. Para desarrollo local, copia `.env.example` a `.env` y modifica la clave secreta.
-
-## Pruebas
-
-```bash
 python manage.py test
 ```
 
-## Funciones incluidas
+### Configuración WhatsApp + OpenAI
 
-- Inicio de sesión protegido.
-- Registro y edición de prospectos con datos comerciales.
-- Embudo por etapas (Nuevo, Contactado, Propuesta, Cerrado).
-- Dashboard con totales y tareas pendientes.
-- Tarea automática al cambiar una oportunidad a Contactado o Propuesta.
-- Asistente de consultas basado en reglas (sin IA real).
-- Separación de información por usuario en la interfaz.
+1. Consigue tu propia clave de OpenAI y las credenciales de WhatsApp Cloud API en Meta Developers.
+2. En tu archivo local `.env` configura `OPENAI_API_KEY`, `META_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_ACCESS_TOKEN` y `WHATSAPP_PHONE_NUMBER_ID`. No subas este archivo a GitHub.
+3. Despliega Django con HTTPS y `DJANGO_DEBUG=0`, establece `DJANGO_ALLOWED_HOSTS` y registra `https://TU_DOMINIO/webhooks/whatsapp/` como webhook en Meta Developers. Usa el mismo token de verificación y suscribe el campo `messages`.
+4. Prueba con un número de prueba de Meta. Respeta las reglas de consentimiento, ventana de atención y plantillas aprobadas de WhatsApp.
 
-## Pendiente para producción
-
-Revisar permisos del administrador, configurar PostgreSQL, HTTPS y secretos de entorno; integrar APIs verificadas y añadir pruebas de seguridad y carga. Usa únicamente datos ficticios para esta demostración.
+**Antes de producción:** mueve el procesamiento sincrónico a una cola de trabajos, utiliza Redis compartido para deduplicación, incorpora métricas y derivación a agentes humanos, y revisa privacidad y manejo de errores. No compartas datos personales con servicios de IA sin autorización adecuada. Las respuestas generadas pueden equivocarse.
